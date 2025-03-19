@@ -263,11 +263,30 @@ function ProductList({ onHomeClick }) {
         }));
       };
       
+      const handleRemoveFromCart = (productName) => {
+        setAddedToCart((prevState) => {
+          const updatedState = { ...prevState };
+          delete updatedState[productName];
+          return updatedState;
+        });
+      };
+      
 
     const dispatch = useDispatch();
     const cartItems = useSelector((state) => state.cart.items);
     const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
 
+    useEffect(() => {
+        // Crée un objet avec les produits encore dans le panier
+        const updatedAddedToCart = {};
+        cartItems.forEach(item => {
+          updatedAddedToCart[item.name] = true;
+        });
+      
+        // Mets à jour l'état local pour refléter les produits actifs
+        setAddedToCart(updatedAddedToCart);
+      }, [cartItems]);
+      
     return (
         <div>
             <div className="navbar" style={styleObj}>
@@ -333,7 +352,10 @@ function ProductList({ onHomeClick }) {
                 ))}
               </div>
             ) : (
-                <CartItem onContinueShopping={handleContinueShopping} />
+                <CartItem 
+  onContinueShopping={handleContinueShopping} 
+  onRemoveFromCart={handleRemoveFromCart}
+/>
             )}
         </div>
     );
